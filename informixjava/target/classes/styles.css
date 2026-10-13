@@ -1,0 +1,121 @@
+.app-root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-background-color: #f4f6f9;
+}
+
+.menu-bar {
+    -fx-background-color: #ffffff;
+    -fx-padding: 3 8 3 8;
+}
+
+.main-toolbar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e4e8ee;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 7 12 7 12;
+    -fx-spacing: 7;
+}
+
+.toolbar-button {
+    -fx-background-color: transparent;
+    -fx-padding: 7 12 7 12;
+    -fx-text-fill: #344054;
+    -fx-cursor: hand;
+}
+
+.toolbar-button:hover {
+    -fx-background-color: #f0f3f8;
+}
+
+.main-split-pane {
+    -fx-background-color: #f4f6f9;
+    -fx-padding: 0;
+}
+
+.main-split-pane > .split-pane-divider {
+    -fx-background-color: #e4e8ee;
+    -fx-padding: 0 1 0 1;
+}
+
+.sidebar {
+    -fx-background-color: #ffffff;
+    -fx-min-width: 190;
+}
+
+.section-eyebrow {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7a8495;
+}
+
+.sidebar-options {
+    -fx-spacing: 5;
+}
+
+.sidebar-option {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: #475467;
+    -fx-cursor: hand;
+}
+
+.sidebar-option:hover {
+    -fx-background-color: #f4f6f9;
+}
+
+.sidebar-option.selected {
+    -fx-background-color: #eaf1ff;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2457b2;
+}
+
+.sidebar-note {
+    -fx-font-size: 11px;
+    -fx-text-fill: #98a2b3;
+    -fx-line-spacing: 3px;
+}
+
+.workspace {
+    -fx-background-color: #f4f6f9;
+}
+
+.workspace-title {
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1d2939;
+}
+
+.workspace-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #667085;
+    -fx-line-spacing: 4px;
+}
+
+.welcome-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: #e7eaf0;
+    -fx-border-radius: 10;
+    -fx-padding: 24;
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+}
+
+.card-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #344054;
+}
+
+.status-bar {
+    -fx-padding: 10 2 2 2;
+    -fx-border-color: #e4e8ee;
+    -fx-border-width: 1 0 0 0;
+    -fx-font-size: 11px;
+    -fx-text-fill: #7a8495;
+}
+
+.text-area {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+}
