@@ -3,6 +3,7 @@ package com.example.informixjava.informixdb;
 import java.util.Objects;
 
 public record InformixConnectionConfig(
+        String nombreConexion,
         String host,
         int port,
         String database,
@@ -11,6 +12,7 @@ public record InformixConnectionConfig(
         String password) {
 
     public InformixConnectionConfig {
+        nombreConexion = requireText(nombreConexion, "El nombre de la conexión es obligatorio.");
         host = requireText(host, "El host es obligatorio.");
         database = requireIdentifier(database, "La base de datos");
         serverName = requireIdentifier(serverName, "El nombre del servidor Informix");
@@ -32,7 +34,8 @@ public record InformixConnectionConfig(
 
     @Override
     public String toString() {
-        return "InformixConnectionConfig[host=" + host
+        return "InformixConnectionConfig[nombreConexion=" + nombreConexion
+                + ", host=" + host
                 + ", port=" + port
                 + ", database=" + database
                 + ", serverName=" + serverName

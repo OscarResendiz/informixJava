@@ -25,6 +25,8 @@ public final class InformixConnectionDialog {
             dialog.initOwner(owner);
         }
 
+        TextField connectionName = new TextField();
+        connectionName.setPromptText("Informix Desarrollo");
         TextField host = new TextField();
         host.setPromptText("localhost");
         TextField port = new TextField("9088");
@@ -40,20 +42,21 @@ public final class InformixConnectionDialog {
         fields.setHgap(12);
         fields.setVgap(10);
         fields.setPadding(new Insets(8, 4, 4, 4));
-        addField(fields, 0, "Host", host);
-        addField(fields, 1, "Puerto", port);
-        addField(fields, 2, "Base de datos", database);
-        addField(fields, 3, "Servidor Informix", serverName);
-        addField(fields, 4, "Usuario", username);
-        addField(fields, 5, "Contraseña", password);
-        fields.add(error, 0, 6, 2, 1);
+        addField(fields, 0, "Nombre de la conexión", connectionName);
+        addField(fields, 1, "Host", host);
+        addField(fields, 2, "Puerto", port);
+        addField(fields, 3, "Base de datos", database);
+        addField(fields, 4, "Servidor Informix", serverName);
+        addField(fields, 5, "Usuario", username);
+        addField(fields, 6, "Contraseña", password);
+        fields.add(error, 0, 7, 2, 1);
         dialog.getDialogPane().setContent(fields);
 
         ButtonType connect = new ButtonType("Conectar", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(connect, ButtonType.CANCEL);
         dialog.getDialogPane().lookupButton(connect).addEventFilter(ActionEvent.ACTION, event -> {
             try {
-                createConfig(host, port, database, serverName, username, password);
+                createConfig(connectionName, host, port, database, serverName, username, password);
                 error.setText("");
             } catch (IllegalArgumentException exception) {
                 error.setText(exception.getMessage());
@@ -64,7 +67,7 @@ public final class InformixConnectionDialog {
             if (button != connect) {
                 return null;
             }
-            return createConfig(host, port, database, serverName, username, password);
+            return createConfig(connectionName, host, port, database, serverName, username, password);
         });
         return dialog.showAndWait();
     }
@@ -76,6 +79,7 @@ public final class InformixConnectionDialog {
     }
 
     private static InformixConnectionConfig createConfig(
+            TextField connectionName,
             TextField host,
             TextField port,
             TextField database,
@@ -89,6 +93,7 @@ public final class InformixConnectionDialog {
             throw new IllegalArgumentException("El puerto debe ser un número entre 1 y 65535.");
         }
         return new InformixConnectionConfig(
+                connectionName.getText(),
                 host.getText(),
                 portNumber,
                 database.getText(),

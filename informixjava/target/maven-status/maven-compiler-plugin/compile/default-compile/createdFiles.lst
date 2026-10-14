@@ -1,9 +1,9 @@
 com\example\informixjava\informixdb\InformixConnectionConfig.class
+com\example\informixjava\informixdb\InformixQueryResult.class
+com\example\informixjava\informixdb\InformixSqlConsole$1.class
+com\example\informixjava\informixdb\InformixDatabase.class
 com\example\informixjava\MainApp.class
 com\example\informixjava\informixdb\InformixConnectionDialog.class
 module-info.class
 com\example\informixjava\informixdb\InformixSqlConsole.class
 com\example\informixjava\MainApp$1.class
-com\example\informixjava\informixdb\InformixQueryResult.class
-com\example\informixjava\informixdb\InformixSqlConsole$1.class
-com\example\informixjava\informixdb\InformixDatabase.class

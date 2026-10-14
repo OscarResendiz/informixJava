@@ -78,6 +78,50 @@
     -fx-background-color: transparent;
 }
 
+.tree-icon {
+    -fx-min-width: 18;
+    -fx-pref-width: 18;
+    -fx-alignment: center;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.tree-icon-root {
+    -fx-text-fill: #2457b2;
+}
+
+.tree-icon-connection {
+    -fx-text-fill: #12a06a;
+}
+
+.tree-icon-category {
+    -fx-text-fill: #667085;
+}
+
+.tree-icon-table {
+    -fx-text-fill: #8a5bd1;
+}
+
+.tree-icon-procedure {
+    -fx-text-fill: #d97706;
+}
+
+.menu-icon {
+    -fx-min-width: 18;
+    -fx-pref-width: 18;
+    -fx-alignment: center;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.menu-icon-connect {
+    -fx-text-fill: #12a06a;
+}
+
+.menu-icon-edit {
+    -fx-text-fill: #2457b2;
+}
+
 .sidebar-note {
     -fx-font-size: 11px;
     -fx-text-fill: #98a2b3;

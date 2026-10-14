@@ -27,16 +27,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import com.example.informixjava.informixdb.InformixConnectionConfig;
-import com.example.informixjava.informixdb.InformixConnectionDialog;
 import com.example.informixjava.informixdb.InformixDatabase;
 import com.example.informixjava.informixdb.InformixSqlConsole;
-
-import java.util.Optional;
+import com.example.informixjava.nodos.CNodoConexiones;
 
 public class MainApp extends Application {
     private Stage primaryStage;
     private MenuItem connectMenuItem;
     private Label statusLabel;
+    private CNodoConexiones connectionsNode;
 
     @Override
     public void start(Stage stage) {
@@ -89,15 +88,10 @@ public class MainApp extends Application {
                 new MenuItem("Guardar"),
                 new SeparatorMenuItem());
 
-        connectMenuItem = new MenuItem("Conectar a Informix...");
-        connectMenuItem.setOnAction(event -> openInformixConnectionDialog());
+        connectMenuItem = new MenuItem("Agregar conexión Informix...");
+        connectMenuItem.setOnAction(event -> connectionsNode.AgregarConexion());
         menu.getItems().addAll(connectMenuItem, new SeparatorMenuItem(), new MenuItem("Salir"));
         return menu;
-    }
-
-    private void openInformixConnectionDialog() {
-        Optional<InformixConnectionConfig> config = InformixConnectionDialog.show(primaryStage);
-        config.ifPresent(this::connectToInformix);
     }
 
     private void connectToInformix(InformixConnectionConfig config) {
@@ -155,18 +149,11 @@ public class MainApp extends Application {
         Label heading = new Label("CONEXIONES");
         heading.getStyleClass().add("section-eyebrow");
 
-        TreeItem<String> connections = new TreeItem<>("Conexiones");
-        connections.getChildren().add(connectionTreeItem(
-                "Informix - Desarrollo (demo)",
-                new String[]{"cliente", "pedido", "producto"},
-                new String[]{"sp_crear_pedido", "sp_consultar_cliente"}));
-        connections.getChildren().add(connectionTreeItem(
-                "Informix - Reportes (demo)",
-                new String[]{"ventas_mensuales", "detalle_ventas"},
-                new String[]{"sp_resumen_ventas", "sp_top_productos"}));
-        connections.setExpanded(true);
+        connectionsNode = new CNodoConexiones();
+        connectionsNode.setConexionCreadaHandler(this::connectToInformix);
+        connectionsNode.setExpanded(true);
 
-        TreeView<String> connectionTree = new TreeView<>(connections);
+        TreeView<String> connectionTree = new TreeView<>(connectionsNode);
         connectionTree.getStyleClass().add("connections-tree");
         connectionTree.setCellFactory(tree -> {
             TreeCell<String> cell = new TreeCell<>() {
@@ -174,10 +161,19 @@ public class MainApp extends Application {
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty ? null : item);
+                    TreeItem<String> treeItem = getTreeItem();
+                    setGraphic(empty || treeItem == null ? null : treeItem.getGraphic());
                 }
             };
             cell.setOnContextMenuRequested(event -> {
                 TreeItem<String> selectedItem = cell.getTreeItem();
+                if (selectedItem instanceof CNodoConexiones rootNode) {
+                    connectionTree.getSelectionModel().select(rootNode);
+                    rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
+                    event.consume();
+                    return;
+                }
+
                 if (selectedItem == null
                         || selectedItem.getParent() == null
                         || selectedItem.getParent().getParent() != null) {
@@ -187,9 +183,11 @@ public class MainApp extends Application {
                 connectionTree.getSelectionModel().select(selectedItem);
                 ContextMenu contextMenu = new ContextMenu();
                 MenuItem connectItem = new MenuItem("Conectar");
+                connectItem.setGraphic(menuIcon("↻", "menu-icon-connect"));
                 connectItem.setOnAction(action ->
                         showConnectionMenuAction("Conectar", selectedItem.getValue()));
                 MenuItem editItem = new MenuItem("Editar conexión");
+                editItem.setGraphic(menuIcon("✎", "menu-icon-edit"));
                 editItem.setOnAction(action ->
                         showConnectionMenuAction("Editar conexión", selectedItem.getValue()));
                 contextMenu.getItems().addAll(connectItem, editItem);
@@ -209,29 +207,14 @@ public class MainApp extends Application {
         return sidebar;
     }
 
-    private void showConnectionMenuAction(String action, String connectionName) {
-        statusLabel.setText("Opción de ejemplo \"" + action + "\" para " + connectionName);
+    private Label menuIcon(String symbol, String styleClass) {
+        Label icon = new Label(symbol);
+        icon.getStyleClass().addAll("menu-icon", styleClass);
+        return icon;
     }
 
-    private TreeItem<String> connectionTreeItem(
-            String connectionName, String[] tableNames, String[] procedureNames) {
-        TreeItem<String> connection = new TreeItem<>(connectionName);
-        TreeItem<String> tables = new TreeItem<>("Tablas");
-        for (String tableName : tableNames) {
-            tables.getChildren().add(new TreeItem<>(tableName));
-        }
-
-        TreeItem<String> procedures = new TreeItem<>("Procedimientos almacenados");
-        for (String procedureName : procedureNames) {
-            procedures.getChildren().add(new TreeItem<>(procedureName));
-        }
-
-        tables.setExpanded(true);
-        procedures.setExpanded(true);
-        connection.getChildren().add(tables);
-        connection.getChildren().add(procedures);
-        connection.setExpanded(true);
-        return connection;
+    private void showConnectionMenuAction(String action, String connectionName) {
+        statusLabel.setText("Opción de ejemplo \"" + action + "\" para " + connectionName);
     }
 
     private VBox createWorkspace() {

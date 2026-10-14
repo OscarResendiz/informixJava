@@ -1,0 +1,9 @@
+{
+  "nombreConexion" : "primera",
+  "host" : "localhost",
+  "puerto" : 9088,
+  "baseDatos" : "prueba",
+  "servidorInformix" : "servidor",
+  "usuario" : "oscar",
+  "contrasena" : "123"
+}
