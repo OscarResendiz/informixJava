@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import com.example.informixjava.informixdb.InformixConnectionConfig;
 import com.example.informixjava.informixdb.InformixDatabase;
 import com.example.informixjava.informixdb.InformixSqlConsole;
+import com.example.informixjava.nodos.CNodoConexion;
 import com.example.informixjava.nodos.CNodoConexiones;
 
 public class MainApp extends Application {
@@ -155,6 +156,7 @@ public class MainApp extends Application {
 
         TreeView<String> connectionTree = new TreeView<>(connectionsNode);
         connectionTree.getStyleClass().add("connections-tree");
+
         connectionTree.setCellFactory(tree -> {
             TreeCell<String> cell = new TreeCell<>() {
                 @Override
@@ -166,13 +168,8 @@ public class MainApp extends Application {
                 }
             };
             cell.setOnContextMenuRequested(event -> {
+
                 TreeItem<String> selectedItem = cell.getTreeItem();
-                if (selectedItem instanceof CNodoConexiones rootNode) {
-                    connectionTree.getSelectionModel().select(rootNode);
-                    rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
-                    event.consume();
-                    return;
-                }
 
                 if (selectedItem == null
                         || selectedItem.getParent() == null
@@ -180,18 +177,27 @@ public class MainApp extends Application {
                     return;
                 }
 
+                if (selectedItem instanceof CNodoConexiones rootNode) {
+                    connectionTree.getSelectionModel().select(rootNode);
+                    rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
+                    event.consume();
+                    return;
+                }
+
+                if (selectedItem instanceof CNodoConexion rootNode) {
+                    connectionTree.getSelectionModel().select(rootNode);
+                    rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
+                    event.consume();
+                    return;
+                }
+
+
                 connectionTree.getSelectionModel().select(selectedItem);
-                ContextMenu contextMenu = new ContextMenu();
-                MenuItem connectItem = new MenuItem("Conectar");
-                connectItem.setGraphic(menuIcon("↻", "menu-icon-connect"));
-                connectItem.setOnAction(action ->
-                        showConnectionMenuAction("Conectar", selectedItem.getValue()));
-                MenuItem editItem = new MenuItem("Editar conexión");
-                editItem.setGraphic(menuIcon("✎", "menu-icon-edit"));
-                editItem.setOnAction(action ->
-                        showConnectionMenuAction("Editar conexión", selectedItem.getValue()));
-                contextMenu.getItems().addAll(connectItem, editItem);
-                contextMenu.show(cell, event.getScreenX(), event.getScreenY());
+               // ContextMenu contextMenu = new ContextMenu();
+                
+               
+                //contextMenu.getItems().addAll(connectItem, editItem);
+               // contextMenu.show(cell, event.getScreenX(), event.getScreenY());
                 event.consume();
             });
             return cell;

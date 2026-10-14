@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Window;
+import com.example.informixjava.nodos.CNodoConexion;
 
 public class CNodoConexiones extends TreeItem<String> {
     private final CAdministradorConexiones administradorConexiones =
@@ -22,12 +23,15 @@ public class CNodoConexiones extends TreeItem<String> {
 
     public CNodoConexiones() {
         super("Conexiones");
+        creaIcono();
+        contextMenu = creaMenu();
+        cargarConexionesGuardadas();
+    }
+    private void creaIcono() {
         Label icon = new Label("◆");
         icon.setAccessibleText("Raíz de conexiones");
         icon.getStyleClass().addAll("tree-icon", "tree-icon-root");
         setGraphic(icon);
-        contextMenu = creaMenu();
-        cargarConexionesGuardadas();
     }
 
     private ContextMenu creaMenu() {
@@ -87,24 +91,7 @@ public class CNodoConexiones extends TreeItem<String> {
             return;
         }
 
-        TreeItem<String> connection = new TreeItem<>(connectionName);
-        Label connectionIcon = new Label("●");
-        connectionIcon.getStyleClass().addAll("tree-icon", "tree-icon-connection");
-        connection.setGraphic(connectionIcon);
-
-        TreeItem<String> tables = new TreeItem<>("Tablas");
-        Label tablesIcon = new Label("▤");
-        tablesIcon.getStyleClass().addAll("tree-icon", "tree-icon-category");
-        tables.setGraphic(tablesIcon);
-
-        TreeItem<String> procedures = new TreeItem<>("Procedimientos almacenados");
-        Label proceduresIcon = new Label("⚙");
-        proceduresIcon.getStyleClass().addAll("tree-icon", "tree-icon-category");
-        procedures.setGraphic(proceduresIcon);
-
-        connection.getChildren().add(tables);
-        connection.getChildren().add(procedures);
-        connection.setExpanded(true);
+        CNodoConexion connection = new CNodoConexion(connectionName);
         getChildren().add(connection);
         setExpanded(true);
     }
