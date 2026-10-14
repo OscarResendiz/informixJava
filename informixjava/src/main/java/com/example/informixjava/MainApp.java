@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -15,6 +16,9 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -148,37 +152,86 @@ public class MainApp extends Application {
     }
 
     private VBox createSidebar() {
-        Label heading = new Label("NAVEGACIÓN");
+        Label heading = new Label("CONEXIONES");
         heading.getStyleClass().add("section-eyebrow");
 
-        VBox options = new VBox(
-                sidebarOption("Inicio", true),
-                sidebarOption("Opción de ejemplo 1", false),
-                sidebarOption("Opción de ejemplo 2", false),
-                sidebarOption("Opción de ejemplo 3", false));
-        options.getStyleClass().add("sidebar-options");
+        TreeItem<String> connections = new TreeItem<>("Conexiones");
+        connections.getChildren().add(connectionTreeItem(
+                "Informix - Desarrollo (demo)",
+                new String[]{"cliente", "pedido", "producto"},
+                new String[]{"sp_crear_pedido", "sp_consultar_cliente"}));
+        connections.getChildren().add(connectionTreeItem(
+                "Informix - Reportes (demo)",
+                new String[]{"ventas_mensuales", "detalle_ventas"},
+                new String[]{"sp_resumen_ventas", "sp_top_productos"}));
+        connections.setExpanded(true);
 
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
+        TreeView<String> connectionTree = new TreeView<>(connections);
+        connectionTree.getStyleClass().add("connections-tree");
+        connectionTree.setCellFactory(tree -> {
+            TreeCell<String> cell = new TreeCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                }
+            };
+            cell.setOnContextMenuRequested(event -> {
+                TreeItem<String> selectedItem = cell.getTreeItem();
+                if (selectedItem == null
+                        || selectedItem.getParent() == null
+                        || selectedItem.getParent().getParent() != null) {
+                    return;
+                }
 
-        Label note = new Label("Aquí podrás agregar controles\npara navegar por la aplicación.");
+                connectionTree.getSelectionModel().select(selectedItem);
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem connectItem = new MenuItem("Conectar");
+                connectItem.setOnAction(action ->
+                        showConnectionMenuAction("Conectar", selectedItem.getValue()));
+                MenuItem editItem = new MenuItem("Editar conexión");
+                editItem.setOnAction(action ->
+                        showConnectionMenuAction("Editar conexión", selectedItem.getValue()));
+                contextMenu.getItems().addAll(connectItem, editItem);
+                contextMenu.show(cell, event.getScreenX(), event.getScreenY());
+                event.consume();
+            });
+            return cell;
+        });
+        VBox.setVgrow(connectionTree, Priority.ALWAYS);
+
+        Label note = new Label("Nombres de ejemplo para tablas\ny procedimientos almacenados.");
         note.getStyleClass().add("sidebar-note");
 
-        VBox sidebar = new VBox(18, heading, options, spacer, note);
+        VBox sidebar = new VBox(14, heading, connectionTree, note);
         sidebar.setPadding(new Insets(24, 16, 20, 16));
         sidebar.getStyleClass().add("sidebar");
         return sidebar;
     }
 
-    private Button sidebarOption(String text, boolean selected) {
-        Button button = new Button(text);
-        button.setMaxWidth(Double.MAX_VALUE);
-        button.setAlignment(Pos.CENTER_LEFT);
-        button.getStyleClass().add("sidebar-option");
-        if (selected) {
-            button.getStyleClass().add("selected");
+    private void showConnectionMenuAction(String action, String connectionName) {
+        statusLabel.setText("Opción de ejemplo \"" + action + "\" para " + connectionName);
+    }
+
+    private TreeItem<String> connectionTreeItem(
+            String connectionName, String[] tableNames, String[] procedureNames) {
+        TreeItem<String> connection = new TreeItem<>(connectionName);
+        TreeItem<String> tables = new TreeItem<>("Tablas");
+        for (String tableName : tableNames) {
+            tables.getChildren().add(new TreeItem<>(tableName));
         }
-        return button;
+
+        TreeItem<String> procedures = new TreeItem<>("Procedimientos almacenados");
+        for (String procedureName : procedureNames) {
+            procedures.getChildren().add(new TreeItem<>(procedureName));
+        }
+
+        tables.setExpanded(true);
+        procedures.setExpanded(true);
+        connection.getChildren().add(tables);
+        connection.getChildren().add(procedures);
+        connection.setExpanded(true);
+        return connection;
     }
 
     private VBox createWorkspace() {

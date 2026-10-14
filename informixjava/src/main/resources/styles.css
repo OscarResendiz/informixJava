@@ -48,26 +48,34 @@
     -fx-text-fill: #7a8495;
 }
 
-.sidebar-options {
-    -fx-spacing: 5;
-}
-
-.sidebar-option {
+.connections-tree {
     -fx-background-color: transparent;
-    -fx-background-radius: 6;
-    -fx-padding: 10 12 10 12;
-    -fx-text-fill: #475467;
-    -fx-cursor: hand;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
-.sidebar-option:hover {
+.connections-tree .tree-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 6 4 6 4;
+    -fx-text-fill: #475467;
+}
+
+.connections-tree .tree-cell:hover {
     -fx-background-color: #f4f6f9;
 }
 
-.sidebar-option.selected {
+.connections-tree .tree-cell:filled:selected {
     -fx-background-color: #eaf1ff;
-    -fx-font-weight: bold;
     -fx-text-fill: #2457b2;
+}
+
+.connections-tree:focused .tree-cell:filled:selected {
+    -fx-background-color: #eaf1ff;
+    -fx-text-fill: #2457b2;
+}
+
+.connections-tree .virtual-flow {
+    -fx-background-color: transparent;
 }
 
 .sidebar-note {
