@@ -1,63 +1,107 @@
 package com.example.informixjava.nodos;
 
 import javafx.scene.control.TreeItem;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import com.example.informixjava.AdministradorConexiones.CAdministradorConexiones;
+import com.example.informixjava.AdministradorConexiones.CDatosConexion;
+import com.example.informixjava.InformixSystemData.InformixSystemData;
+import com.example.informixjava.informixdb.InformixConnectionConfig;
+import com.example.informixjava.informixdb.InformixConnectionDialog;
+import com.example.informixjava.informixdb.InformixDatabase;
+import com.example.informixjava.informixdb.InformixSqlConsole;
+
+import javafx.concurrent.Task;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 
 public class CNodoConexion extends CNodoBase {
     private final String nombreConexion;
+    private final CAdministradorConexiones administradorConexiones = CAdministradorConexiones
+            .DameAdministradorConexiones();
 
     public CNodoConexion(String nombreConexion) {
         super(nombreConexion);
         this.nombreConexion = nombreConexion;
         creaIcono("●", "tree-icon-connection");
         creaMenu();
-        CargaTablas();
-        CargaProcedimientos();
+        Recargar();
     }
 
     public String getNombreConexion() {
         return nombreConexion;
     }
 
-    private Label menuIcon(String symbol, String styleClass) {
-        Label icon = new Label(symbol);
-        icon.getStyleClass().addAll("menu-icon", styleClass);
-        return icon;
-    }
 
     private void creaMenu() {
-        addMenuItem("Reconectar", "↻", "menu-icon-connect", () -> Reconectar());
+        addMenuItem("Recargar", "↻", "menu-icon-connect", () -> Recargar());
         addMenuItem("Editar conexión", "✎", "menu-icon-edit", () -> editarConexion());
         addMenuItem("Eliminar conexión", "✕", "menu-icon-delete", () -> eliminarConexion());
     }
 
-    private void CargaTablas() {
-        TreeItem<String> tables = new TreeItem<>("Tablas");
-        Label tablesIcon = new Label("▤");
-        tablesIcon.getStyleClass().addAll("tree-icon", "tree-icon-category");
-        tables.setGraphic(tablesIcon);
-        getChildren().add(tables);
-        setExpanded(true);
-
-    }
-
-    private void CargaProcedimientos() {
-        TreeItem<String> procedures = new TreeItem<>("Procedimientos almacenados");
-        Label proceduresIcon = new Label("⚙");
-        proceduresIcon.getStyleClass().addAll("tree-icon", "tree-icon-category");
-        procedures.setGraphic(proceduresIcon);
-        getChildren().add(procedures);
-        setExpanded(true);
-    }
     private void editarConexion() {
-        // Implementa la lógica para editar la conexión aquí
+        try {
+            // me traigo mis datos
+            CDatosConexion datos = administradorConexiones.dameConexion(nombreConexion);
+            Optional<InformixConnectionConfig> resultado = InformixConnectionDialog.show(obtenerVentana(),
+                    datos.nombreConexion(), datos.host(), datos.puerto(), datos.baseDatos(), datos.servidorInformix(),
+                    datos.usuario(), datos.contrasena());
+            resultado.ifPresent(this::guardarConexion);
+        } catch (Exception ex) {
+            mostrarError("No se pudo guardar la conexión.", ex);
+
+        }
     }
+
+    private void guardarConexion(InformixConnectionConfig config) {
+        try {
+            administradorConexiones.ActualizarConexion(
+                    config.nombreConexion(),
+                    config.host(),
+                    config.port(),
+                    config.database(),
+                    config.serverName(),
+                    config.username(),
+                    config.password());
+        } catch (IOException | IllegalArgumentException exception) {
+            mostrarError("No se pudo guardar la conexión.", exception);
+            return;
+        }
+    }
+
     private void eliminarConexion() {
         // Implementa la lógica para eliminar la conexión aquí
+        mostrarYesNoDialog("Eliminar", "¿Seguro que desea eliminar la conexion " + nombreConexion + "?",
+                () -> confirmacionEliminar(), () -> {
+                });
     }
-    private void Reconectar() {
-        // Implementa la lógica para reconectar la conexión aquí
+
+    private void confirmacionEliminar() {
+        try {
+            administradorConexiones.eliminarConexion(nombreConexion);
+            this.getParent().getChildren().remove(this);
+        } catch (Exception ex) {
+            mostrarError("No se pudo guardar la conexión.", ex);
+        }
+    }
+
+    private void Recargar() {
+        try {
+            getChildren().clear();
+            CDatosConexion datos = administradorConexiones.dameConexion(nombreConexion);
+            InformixSystemData systemData=new InformixSystemData(datos);
+            List<String> lista=systemData.getDataBases();
+            for(String base: lista)
+            {
+               CNodoDataBase nodo=new CNodoDataBase(base,datos) ;
+               getChildren().add(nodo);
+            }
+        } catch (Exception ex) {
+            mostrarError("Error", ex);
+        }
     }
 }

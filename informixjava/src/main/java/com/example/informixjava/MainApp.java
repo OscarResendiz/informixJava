@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import com.example.informixjava.informixdb.InformixConnectionConfig;
 import com.example.informixjava.informixdb.InformixDatabase;
 import com.example.informixjava.informixdb.InformixSqlConsole;
+import com.example.informixjava.nodos.CNodoBase;
 import com.example.informixjava.nodos.CNodoConexion;
 import com.example.informixjava.nodos.CNodoConexiones;
 
@@ -58,6 +59,7 @@ public class MainApp extends Application {
         stage.setMinWidth(820);
         stage.setMinHeight(560);
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 
@@ -169,36 +171,40 @@ public class MainApp extends Application {
             };
             cell.setOnContextMenuRequested(event -> {
 
-                TreeItem<String> selectedItem = cell.getTreeItem();
-
-                if (selectedItem == null
-                        || selectedItem.getParent() == null
-                        || selectedItem.getParent().getParent() != null) {
+                // TreeItem<String> selectedItem = cell.getTreeItem();
+                CNodoBase selectedItem = (CNodoBase) cell.getTreeItem();
+                if (selectedItem == null)
+                // || selectedItem.getParent() == null
+                // || selectedItem.getParent().getParent() != null)
+                {
                     return;
                 }
-
-                if (selectedItem instanceof CNodoConexiones rootNode) {
-                    connectionTree.getSelectionModel().select(rootNode);
-                    rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
-                    event.consume();
-                    return;
-                }
-
-                if (selectedItem instanceof CNodoConexion rootNode) {
-                    connectionTree.getSelectionModel().select(rootNode);
-                    rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
-                    event.consume();
-                    return;
-                }
-
-
                 connectionTree.getSelectionModel().select(selectedItem);
-               // ContextMenu contextMenu = new ContextMenu();
-                
-               
-                //contextMenu.getItems().addAll(connectItem, editItem);
-               // contextMenu.show(cell, event.getScreenX(), event.getScreenY());
+                selectedItem.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
                 event.consume();
+                return;
+                /*
+                 * if (selectedItem instanceof CNodoConexiones rootNode) {
+                 * connectionTree.getSelectionModel().select(rootNode);
+                 * rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
+                 * event.consume();
+                 * return;
+                 * }
+                 * 
+                 * if (selectedItem instanceof CNodoConexion rootNode) {
+                 * connectionTree.getSelectionModel().select(rootNode);
+                 * rootNode.getContextMenu().show(cell, event.getScreenX(), event.getScreenY());
+                 * event.consume();
+                 * return;
+                 * }
+                 * 
+                 */
+                //connectionTree.getSelectionModel().select(selectedItem);
+                // ContextMenu contextMenu = new ContextMenu();
+
+                // contextMenu.getItems().addAll(connectItem, editItem);
+                // contextMenu.show(cell, event.getScreenX(), event.getScreenY());
+                //event.consume();
             });
             return cell;
         });

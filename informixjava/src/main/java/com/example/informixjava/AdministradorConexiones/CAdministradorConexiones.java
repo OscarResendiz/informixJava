@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CAdministradorConexiones {
+    private static CAdministradorConexiones AdministradorConexiones;
     private static final String EXTENSION = ".con";
     private static final Pattern CARACTERES_INVALIDOS =
             Pattern.compile("[\\\\/:*?\"<>|\\p{Cntrl}]");
@@ -21,10 +22,18 @@ public class CAdministradorConexiones {
     private final Path carpetaConexiones;
     private final ObjectMapper objectMapper;
 
-    public CAdministradorConexiones() {
+    private  CAdministradorConexiones() {
         this(Path.of("conexionesInformix"));
     }
 
+    public static  CAdministradorConexiones DameAdministradorConexiones()
+    {
+        if(AdministradorConexiones == null)
+        {
+            AdministradorConexiones=new CAdministradorConexiones();
+        }
+        return AdministradorConexiones;
+    }
     public CAdministradorConexiones(Path carpetaConexiones) {
         this.carpetaConexiones = carpetaConexiones.toAbsolutePath().normalize();
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -98,5 +107,34 @@ public class CAdministradorConexiones {
                     "El nombre de la conexión contiene caracteres no permitidos para un archivo.");
         }
         return nombre;
+    }
+    public void ActualizarConexion(
+            String nombreConexion,
+            String host,
+            int puerto,
+            String baseDatos,
+            String servidorInformix,
+            String usuario,
+            String contrasena) throws IOException {
+        CDatosConexion datos = new CDatosConexion(
+                validarNombre(nombreConexion),
+                host,
+                puerto,
+                baseDatos,
+                servidorInformix,
+                usuario,
+                contrasena);
+        Files.createDirectories(carpetaConexiones);
+
+        Path archivo = archivoConexion(datos.nombreConexion());
+        try (OutputStream output = Files.newOutputStream(
+                archivo, StandardOpenOption.WRITE, StandardOpenOption.WRITE)) {
+            objectMapper.writeValue(output, datos);
+        }
+    }
+    public void eliminarConexion(String nombreConexion) throws IOException
+    {
+        Path archivo = archivoConexion(nombreConexion);
+        Files.deleteIfExists(archivo);
     }
 }

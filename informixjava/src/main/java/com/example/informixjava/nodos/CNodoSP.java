@@ -1,0 +1,56 @@
+package com.example.informixjava.nodos;
+
+import java.util.List;
+
+import com.example.informixjava.AdministradorConexiones.CDatosConexion;
+import com.example.informixjava.InformixSystemData.InformixSystemData;
+
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+
+public class CNodoSP extends CNodoBase {
+    private final String NombreSP;
+    CDatosConexion datosConexion;
+
+    public CNodoSP(String nombresp, CDatosConexion datosConexiondb) {
+        NombreSP = nombresp;
+        super(nombresp);
+        datosConexion = datosConexiondb;
+        creaIcono("ƒ", "tree-icon-connection");
+        creaMenu();
+        // CargaTablas();
+        // CargaProcedimientos();
+    }
+
+    private void creaMenu() {
+        addMenuItem("copiar código fuente al porta papeles", "¶", "menu-icon-connect", () -> verCodigoFuente());
+        // addMenuItem("Editar conexión", "✎", "menu-icon-edit", () ->
+        // editarConexion());
+        // addMenuItem("Eliminar conexión", "✕", "menu-icon-delete", () ->
+        // eliminarConexion());
+    }
+
+    private void verCodigoFuente() {
+        try {
+            getChildren().clear();
+            InformixSystemData systemData = new InformixSystemData(datosConexion);
+            String codigo = systemData.getSourceCodeSP(NombreSP);
+            copiarAlPortapapeles(codigo);
+            mostrarMensaje("código fuente", "el código fuente del procedimiento almacenado fue copiado en el porta papeles");
+
+        } catch (Exception ex) {
+            mostrarError("Error", ex);
+        }
+    }
+public static void copiarAlPortapapeles(String texto) {
+        // 1. Obtener el portapapeles del sistema en JavaFX
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+
+        // 2. Crear el contenedor de contenido
+        ClipboardContent content = new ClipboardContent();
+        content.putString(texto);
+
+        // 3. Asignar el contenido al portapapeles
+        clipboard.setContent(content);
+    }
+}

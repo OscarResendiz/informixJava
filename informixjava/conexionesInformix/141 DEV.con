@@ -1,0 +1,9 @@
+{
+  "nombreConexion" : "141 DEV",
+  "host" : "10.27.22.141",
+  "puerto" : 11531,
+  "baseDatos" : "bdinteg",
+  "servidorInformix" : "bancoppel2_shm",
+  "usuario" : "syscybcred",
+  "contrasena" : "ugHxWZ0y1lA[k26i7~83C!BD{e*9mF_J"
+}}

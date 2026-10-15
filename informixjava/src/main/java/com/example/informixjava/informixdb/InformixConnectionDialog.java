@@ -16,8 +16,16 @@ import java.util.Optional;
 public final class InformixConnectionDialog {
     private InformixConnectionDialog() {
     }
-
-    public static Optional<InformixConnectionConfig> show(Window owner) {
+    public static Optional<InformixConnectionConfig> show(Window owner    
+        ,String connectionName
+        ,String host 
+        ,Integer port
+        ,String database
+        ,String serverName
+        ,String username 
+        ,String password 
+    ) {
+        
         Dialog<InformixConnectionConfig> dialog = new Dialog<>();
         dialog.setTitle("Conectar a Informix");
         dialog.setHeaderText("Ingresa los datos de conexión a la base de datos.");
@@ -25,15 +33,30 @@ public final class InformixConnectionDialog {
             dialog.initOwner(owner);
         }
 
-        TextField connectionName = new TextField();
-        connectionName.setPromptText("Informix Desarrollo");
-        TextField host = new TextField();
-        host.setPromptText("localhost");
-        TextField port = new TextField("9088");
-        TextField database = new TextField();
-        TextField serverName = new TextField();
-        TextField username = new TextField();
-        PasswordField password = new PasswordField();
+        TextField tconnectionName = new TextField();
+        tconnectionName.setPromptText("Informix Desarrollo");
+        TextField thost = new TextField();
+        thost.setPromptText("localhost");
+        TextField tport = new TextField("9088");
+        TextField tdatabase = new TextField();
+        TextField tserverName = new TextField();
+        TextField tusername = new TextField();
+        PasswordField tpassword = new PasswordField();
+        //asigno valores
+        tconnectionName.setText(connectionName);
+        if(!connectionName.equals(""))
+        {
+            //ya tiene un nombre asignado, por lo que no se puede editar
+            tconnectionName.setEditable(false);
+            tconnectionName.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: #555555;");
+        }
+        thost.setText(host);
+        tport.setText(port.toString());
+        tdatabase.setText(database);
+        tserverName.setText(serverName);
+        tusername.setText(username);
+        tpassword.setText(password);
+
         Label error = new Label();
         error.setStyle("-fx-text-fill: #b42318;");
         error.setWrapText(true);
@@ -42,13 +65,13 @@ public final class InformixConnectionDialog {
         fields.setHgap(12);
         fields.setVgap(10);
         fields.setPadding(new Insets(8, 4, 4, 4));
-        addField(fields, 0, "Nombre de la conexión", connectionName);
-        addField(fields, 1, "Host", host);
-        addField(fields, 2, "Puerto", port);
-        addField(fields, 3, "Base de datos", database);
-        addField(fields, 4, "Servidor Informix", serverName);
-        addField(fields, 5, "Usuario", username);
-        addField(fields, 6, "Contraseña", password);
+        addField(fields, 0, "Nombre de la conexión", tconnectionName);
+        addField(fields, 1, "Host", thost);
+        addField(fields, 2, "Puerto", tport);
+        addField(fields, 3, "Base de datos", tdatabase);
+        addField(fields, 4, "Servidor Informix", tserverName);
+        addField(fields, 5, "Usuario", tusername);
+        addField(fields, 6, "Contraseña", tpassword);
         fields.add(error, 0, 7, 2, 1);
         dialog.getDialogPane().setContent(fields);
 
@@ -56,7 +79,7 @@ public final class InformixConnectionDialog {
         dialog.getDialogPane().getButtonTypes().addAll(connect, ButtonType.CANCEL);
         dialog.getDialogPane().lookupButton(connect).addEventFilter(ActionEvent.ACTION, event -> {
             try {
-                createConfig(connectionName, host, port, database, serverName, username, password);
+                createConfig(tconnectionName, thost, tport, tdatabase, tserverName, tusername, tpassword);
                 error.setText("");
             } catch (IllegalArgumentException exception) {
                 error.setText(exception.getMessage());
@@ -67,9 +90,13 @@ public final class InformixConnectionDialog {
             if (button != connect) {
                 return null;
             }
-            return createConfig(connectionName, host, port, database, serverName, username, password);
+            return createConfig(tconnectionName, thost, tport, tdatabase, tserverName, tusername, tpassword);
         });
         return dialog.showAndWait();
+    }
+
+    public static Optional<InformixConnectionConfig> show(Window owner) {
+        return show(owner,"","",9088,"","","","");
     }
 
     private static void addField(GridPane fields, int row, String label, TextField field) {

@@ -41,6 +41,7 @@ public final class InformixSqlConsole {
         stage.setMinHeight(560);
         stage.setScene(new Scene(createContent(), 1000, 720));
         stage.setOnHidden(event -> closeDatabase());
+        stage.setMaximized(true);
     }
 
     public void show() {

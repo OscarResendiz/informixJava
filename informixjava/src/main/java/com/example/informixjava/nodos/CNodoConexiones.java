@@ -15,36 +15,20 @@ import javafx.scene.control.TreeItem;
 import javafx.stage.Window;
 import com.example.informixjava.nodos.CNodoConexion;
 
-public class CNodoConexiones extends TreeItem<String> {
-    private final CAdministradorConexiones administradorConexiones =
-            new CAdministradorConexiones();
-    private final ContextMenu contextMenu;
-    private Consumer<InformixConnectionConfig> conexionCreadaHandler = config -> { };
+public class CNodoConexiones extends CNodoBase {
+    private final CAdministradorConexiones administradorConexiones = CAdministradorConexiones.DameAdministradorConexiones();
+    private Consumer<InformixConnectionConfig> conexionCreadaHandler = config -> {
+    };
 
     public CNodoConexiones() {
         super("Conexiones");
-        creaIcono();
-        contextMenu = creaMenu();
+        creaIcono("◆", "tree-icon-connection");
+        creaMenu();
         cargarConexionesGuardadas();
     }
-    private void creaIcono() {
-        Label icon = new Label("◆");
-        icon.setAccessibleText("Raíz de conexiones");
-        icon.getStyleClass().addAll("tree-icon", "tree-icon-root");
-        setGraphic(icon);
-    }
 
-    private ContextMenu creaMenu() {
-        MenuItem addConnectionItem = new MenuItem("Agregar conexión");
-        Label addIcon = new Label("+");
-        addIcon.getStyleClass().addAll("menu-icon", "menu-icon-connect");
-        addConnectionItem.setGraphic(addIcon);
-        addConnectionItem.setOnAction(event -> AgregarConexion());
-        return new ContextMenu(addConnectionItem);
-    }
-
-    public ContextMenu getContextMenu() {
-        return contextMenu;
+    private void creaMenu() {
+        addMenuItem("Agregar conexión", "+", "menu-icon-connect", () -> AgregarConexion());
     }
 
     public void setConexionCreadaHandler(Consumer<InformixConnectionConfig> handler) {
@@ -52,8 +36,7 @@ public class CNodoConexiones extends TreeItem<String> {
     }
 
     public void AgregarConexion() {
-        Optional<InformixConnectionConfig> resultado =
-                InformixConnectionDialog.show(obtenerVentana());
+        Optional<InformixConnectionConfig> resultado = InformixConnectionDialog.show(obtenerVentana());
         resultado.ifPresent(this::guardarConexion);
     }
 
@@ -96,23 +79,5 @@ public class CNodoConexiones extends TreeItem<String> {
         setExpanded(true);
     }
 
-    private Window obtenerVentana() {
-        return getGraphic() != null && getGraphic().getScene() != null
-                ? getGraphic().getScene().getWindow()
-                : null;
-    }
 
-    private void mostrarError(String encabezado, Exception exception) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        Window owner = obtenerVentana();
-        if (owner != null) {
-            alert.initOwner(owner);
-        }
-        alert.setTitle("Administración de conexiones");
-        alert.setHeaderText(encabezado);
-        alert.setContentText(exception.getMessage() == null
-                ? exception.toString()
-                : exception.getMessage());
-        alert.showAndWait();
-    }
 }
