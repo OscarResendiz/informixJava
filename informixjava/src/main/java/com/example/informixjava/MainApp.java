@@ -15,6 +15,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeCell;
@@ -38,10 +39,17 @@ public class MainApp extends Application {
     private MenuItem connectMenuItem;
     private Label statusLabel;
     private CNodoConexiones connectionsNode;
+    private TextArea editor;
 
     @Override
     public void start(Stage stage) {
         primaryStage = stage;
+        editor = new TextArea();
+        editor.setPromptText("Escribe o pega texto aquí...");
+        editor.setWrapText(false);
+        editor.setMaxWidth(Double.MAX_VALUE);
+        editor.getStyleClass().add("workspace-text-area");
+
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app-root");
         root.setTop(createHeader());
@@ -152,7 +160,7 @@ public class MainApp extends Application {
         Label heading = new Label("CONEXIONES");
         heading.getStyleClass().add("section-eyebrow");
 
-        connectionsNode = new CNodoConexiones();
+        connectionsNode = new CNodoConexiones(editor::setText);
         connectionsNode.setConexionCreadaHandler(this::connectToInformix);
         connectionsNode.setExpanded(true);
 
@@ -230,27 +238,16 @@ public class MainApp extends Application {
     }
 
     private VBox createWorkspace() {
-        Label eyebrow = new Label("ESPACIO DE TRABAJO");
-        eyebrow.getStyleClass().add("section-eyebrow");
+        //Label eyebrow = new Label("ESPACIO DE TRABAJO");
+        //eyebrow.getStyleClass().add("section-eyebrow");
 
-        Label title = new Label("Bienvenido");
-        title.getStyleClass().add("workspace-title");
+        //Label title = new Label("Bienvenido");
+        //title.getStyleClass().add("workspace-title");
 
-        Label subtitle = new Label(
-                "Esta es el área principal de la aplicación. Aquí podrás incorporar tus funcionalidades.");
-        subtitle.getStyleClass().add("workspace-subtitle");
-        subtitle.setWrapText(true);
-
-        VBox welcomeCard = new VBox(12,
-                new Label("ÁREA DE CONTENIDO"),
-                new Label("Tu espacio para trabajar"),
-                new Label("Selecciona una opción del panel izquierdo o agrega aquí los controles de tu aplicación."));
-        welcomeCard.getStyleClass().add("welcome-card");
-        welcomeCard.getChildren().get(0).getStyleClass().add("section-eyebrow");
-        welcomeCard.getChildren().get(1).getStyleClass().add("card-title");
-        welcomeCard.getChildren().get(2).getStyleClass().add("workspace-subtitle");
-        ((Label) welcomeCard.getChildren().get(2)).setWrapText(true);
-        welcomeCard.setMaxWidth(Double.MAX_VALUE);
+        //Label subtitle = new Label(
+          //      "Esta es el área principal de la aplicación. Aquí podrás incorporar tus funcionalidades.");
+        //subtitle.getStyleClass().add("workspace-subtitle");
+        //subtitle.setWrapText(true);
 
         statusLabel = new Label("Listo");
         HBox statusBar = new HBox(statusLabel, new Region(), new Label("Aplicación de ejemplo"));
@@ -258,9 +255,9 @@ public class MainApp extends Application {
         HBox.setHgrow(statusBar.getChildren().get(1), Priority.ALWAYS);
         statusBar.getStyleClass().add("status-bar");
 
-        VBox workspace = new VBox(12, eyebrow, title, subtitle, welcomeCard, statusBar);
+        VBox workspace = new VBox(12, /*eyebrow, title, subtitle,*/ editor, statusBar);
         workspace.setPadding(new Insets(30, 34, 18, 34));
-        VBox.setVgrow(welcomeCard, Priority.ALWAYS);
+        VBox.setVgrow(editor, Priority.ALWAYS);
         workspace.getStyleClass().add("workspace");
         return workspace;
     }

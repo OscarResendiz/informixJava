@@ -1,6 +1,8 @@
 package com.example.informixjava.nodos;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import com.example.informixjava.AdministradorConexiones.CDatosConexion;
 import com.example.informixjava.InformixSystemData.InformixSystemData;
@@ -10,12 +12,14 @@ import javafx.scene.input.ClipboardContent;
 
 public class CNodoSP extends CNodoBase {
     private final String NombreSP;
+    private final Consumer<String> textoHandler;
     CDatosConexion datosConexion;
 
-    public CNodoSP(String nombresp, CDatosConexion datosConexiondb) {
-        NombreSP = nombresp;
+    public CNodoSP(String nombresp, CDatosConexion datosConexiondb, Consumer<String> textoHandler) {
         super(nombresp);
+        NombreSP = nombresp;
         datosConexion = datosConexiondb;
+        this.textoHandler = Objects.requireNonNull(textoHandler);
         creaIcono("ƒ", "tree-icon-connection");
         creaMenu();
         // CargaTablas();
@@ -23,7 +27,7 @@ public class CNodoSP extends CNodoBase {
     }
 
     private void creaMenu() {
-        addMenuItem("copiar código fuente al porta papeles", "¶", "menu-icon-connect", () -> verCodigoFuente());
+        addMenuItem("ver codigo fuente", "¶", "menu-icon-connect", () -> verCodigoFuente());
         // addMenuItem("Editar conexión", "✎", "menu-icon-edit", () ->
         // editarConexion());
         // addMenuItem("Eliminar conexión", "✕", "menu-icon-delete", () ->
@@ -32,16 +36,22 @@ public class CNodoSP extends CNodoBase {
 
     private void verCodigoFuente() {
         try {
-            getChildren().clear();
+            //getChildren().clear();
             InformixSystemData systemData = new InformixSystemData(datosConexion);
             String codigo = systemData.getSourceCodeSP(NombreSP);
-            copiarAlPortapapeles(codigo);
-            mostrarMensaje("código fuente", "el código fuente del procedimiento almacenado fue copiado en el porta papeles");
+            muestraTexto(codigo);
+            //copiarAlPortapapeles(codigo);
+            //mostrarMensaje("código fuente", "el código fuente del procedimiento almacenado fue copiado en el porta papeles");
 
         } catch (Exception ex) {
             mostrarError("Error", ex);
         }
     }
+
+    public void muestraTexto(String texto) {
+        textoHandler.accept(Objects.requireNonNull(texto));
+    }
+
 public static void copiarAlPortapapeles(String texto) {
         // 1. Obtener el portapapeles del sistema en JavaFX
         Clipboard clipboard = Clipboard.getSystemClipboard();

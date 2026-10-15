@@ -8,14 +8,17 @@ import com.example.informixjava.informixdb.InformixSqlConsole;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
+import java.util.function.Consumer;
 
 public class CNodoDataBase extends CNodoBase{
     private final String NombreDB;
+    private final Consumer<String> textoHandler;
     CDatosConexion datosConexion;
-    public CNodoDataBase(String nombreDB, CDatosConexion datosConexionServidor)
+    public CNodoDataBase(String nombreDB, CDatosConexion datosConexionServidor, Consumer<String> textoHandler)
     {
         NombreDB=nombreDB;
         super(nombreDB);
+        this.textoHandler = textoHandler;
         datosConexion= new CDatosConexion(NombreDB, datosConexionServidor.host(),datosConexionServidor.puerto(),NombreDB,datosConexionServidor.servidorInformix(),datosConexionServidor.usuario(),datosConexionServidor.contrasena());
         creaIcono("Ð", "tree-icon-connection");
         creaMenu();
@@ -37,7 +40,8 @@ public class CNodoDataBase extends CNodoBase{
 
     }
     private void CargaProcedimientos() {
-        CNodoProcedimientosAlmacenados nodoProcedimientosAlmacenados=new CNodoProcedimientosAlmacenados(NombreDB, datosConexion);
+        CNodoProcedimientosAlmacenados nodoProcedimientosAlmacenados=
+                new CNodoProcedimientosAlmacenados(NombreDB, datosConexion, textoHandler);
         getChildren().add(nodoProcedimientosAlmacenados);
     }
     private void consultar()

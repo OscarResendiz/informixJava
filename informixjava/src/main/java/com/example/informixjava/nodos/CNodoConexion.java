@@ -5,6 +5,7 @@ import javafx.scene.control.TreeItem;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.example.informixjava.AdministradorConexiones.CAdministradorConexiones;
 import com.example.informixjava.AdministradorConexiones.CDatosConexion;
@@ -21,12 +22,14 @@ import javafx.scene.control.MenuItem;
 
 public class CNodoConexion extends CNodoBase {
     private final String nombreConexion;
+    private final Consumer<String> textoHandler;
     private final CAdministradorConexiones administradorConexiones = CAdministradorConexiones
             .DameAdministradorConexiones();
 
-    public CNodoConexion(String nombreConexion) {
+    public CNodoConexion(String nombreConexion, Consumer<String> textoHandler) {
         super(nombreConexion);
         this.nombreConexion = nombreConexion;
+        this.textoHandler = textoHandler;
         creaIcono("●", "tree-icon-connection");
         creaMenu();
         Recargar();
@@ -97,7 +100,7 @@ public class CNodoConexion extends CNodoBase {
             List<String> lista=systemData.getDataBases();
             for(String base: lista)
             {
-               CNodoDataBase nodo=new CNodoDataBase(base,datos) ;
+               CNodoDataBase nodo=new CNodoDataBase(base,datos,textoHandler) ;
                getChildren().add(nodo);
             }
         } catch (Exception ex) {

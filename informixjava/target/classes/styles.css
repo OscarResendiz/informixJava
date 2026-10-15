@@ -132,6 +132,16 @@
     -fx-background-color: #f4f6f9;
 }
 
+.workspace-text-area {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: #e7eaf0;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 13px;
+}
+
 .workspace-title {
     -fx-font-size: 27px;
     -fx-font-weight: bold;

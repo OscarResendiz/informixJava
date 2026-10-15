@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.Objects;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -17,11 +18,13 @@ import com.example.informixjava.nodos.CNodoConexion;
 
 public class CNodoConexiones extends CNodoBase {
     private final CAdministradorConexiones administradorConexiones = CAdministradorConexiones.DameAdministradorConexiones();
+    private final Consumer<String> textoHandler;
     private Consumer<InformixConnectionConfig> conexionCreadaHandler = config -> {
     };
 
-    public CNodoConexiones() {
+    public CNodoConexiones(Consumer<String> textoHandler) {
         super("Conexiones");
+        this.textoHandler = Objects.requireNonNull(textoHandler);
         creaIcono("◆", "tree-icon-connection");
         creaMenu();
         cargarConexionesGuardadas();
@@ -74,7 +77,7 @@ public class CNodoConexiones extends CNodoBase {
             return;
         }
 
-        CNodoConexion connection = new CNodoConexion(connectionName);
+        CNodoConexion connection = new CNodoConexion(connectionName, textoHandler);
         getChildren().add(connection);
         setExpanded(true);
     }
